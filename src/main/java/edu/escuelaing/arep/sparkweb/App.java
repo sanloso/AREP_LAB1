@@ -1,6 +1,9 @@
 package edu.escuelaing.arep.sparkweb;
 import spark.Request;
 import spark.Response;
+
+import java.io.IOException;
+
 import static spark.Spark.*;
 
 /**
@@ -20,6 +23,7 @@ public class App {
         staticFiles.location("/public");
         get("/inputdata", (req, res) -> inputDataPage(req, res));
         get("/results", (req, res) -> resultsPage(req, res));
+        get("/bolsa", (req, res) -> getData(req, res));
     }
 
     private static String inputDataPage(Request req, Response res) {
@@ -27,25 +31,21 @@ public class App {
                 = "<!DOCTYPE html>"
                 + "<html>"
                 + "<body>"
-                + "<h2>HTML Forms</h2>"
-                + "<form action=\"/results\">"
-                + "  First name:<br>"
-                + "  <input type=\"text\" name=\"firstname\" value=\"Mickey\">"
+                + "<h2>TICKERS</h2>"
+                + "<form action=\"/bolsa\">"
+                + "  Ticker:<br>"
+                + "  <input type=\"text\" name=\"ticker\">"
                 + "  <br>"
-                + "  Last name:<br>"
-                + "  <input type=\"text\" name=\"lastname\" value=\"Mouse\">"
-                + "  <br><br>"
                 + "  <input type=\"submit\" value=\"Submit\">"
                 + "</form>"
-                + "<p>If you click the \"Submit\" button, the form-data will be sent to a page called \"/results\".</p>"
+                + "<p>If you click the \"Submit\" button, the form-data will be sent to a page called \"/bolsa\".</p>"
                 + "</body>"
                 + "</html>";
         return pageContent;
     }
 
     private static String resultsPage(Request req, Response res) {
-        return req.queryParams("firstname") + " " +
-                req.queryParams("lastname");
+        return req.queryParams("ticker") + " ";
     }
 
     /**
@@ -61,5 +61,17 @@ public class App {
         }
         return 4567; //returns default port if heroku-port isn't set (i.e. on localhost)
     }
+
+    private static String getData(Request req, Response res) {
+        String response = "None";
+        try {
+            response =  HttpConectionExample.getData(req.queryParams("ticker"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+
 
 }
